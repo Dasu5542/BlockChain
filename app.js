@@ -10,6 +10,9 @@ var session         = require('express-session');
 const { rawListeners } = require('process');
 var MySQLStore      = require('express-mysql-session')(session);
 var date = new Date();
+var Web3            = require('web3');
+var web3            = new Web3();
+web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 //  DBConnect
 var MySQLOption = {
@@ -220,4 +223,44 @@ app.get('/insertBook', function(req,res){
         else console.log(rows);
     })
     res.end();
+});
+
+
+
+/* Block Chain */
+
+var toAddress = '0xdd79a79925015135A3e85c33a318ff7442C8fa8D';
+var myAddress = '0xee971fE02C4ECc26bb506cad486E4D36B931551e';
+
+function stringToHex(str){
+    const buf = Buffer.from(str, 'utf8');
+    return buf.toString('hex');
+}
+
+var dataString = stringToHex('{"iv":{"type":"Buffer","data":[223,198,138,238,64,167,43,116,43,181,224,231,217,150,187,84]},"ephemPublicKey":{"type":"Buffer","data":[4,177,226,28,8,219,247,53,98,10,53,131,180,83,29,59,216,31,156,108,48,22,88,108,207,222,190,175,226,153,80,38,226,10,68,173,180,105,180,189,212,165,254,223,185,26,21,17,28,193,84,241,11,198,207,201,246,239,214,19,120,64,129,251,85]},"ciphertext":{"type":"Buffer","data":[122,230,106,123,98,227,121,8,254,74,92,101,216,139,57,71]},"mac":{"type":"Buffer","data":[119,16,246,20,77,129,113,133,250,199,173,121,25,201,140,170,133,236,63,196,201,205,66,231,109,66,135,232,186,103,220,229]}}');
+
+var PlatfromIndex = '02';
+var Purchase = '01';
+var enISBN = '0x827e11ba8ffbaabf43bdf43e99f64205';
+
+const dataStr = dataString+PlatfromIndex+Purchase;
+
+var txHash = web3.eth.sendTransaction({
+    from: myAddress,
+    to: toAddress,
+    data: dataStr
+}, function(err, TxID){ if(!err) {
+    //web3.eth.getTransaction(TxID).then(console.log);
+    }
+}
+);
+
+console.log("----------");
+
+var i;
+web3.eth.getBlock(1,true,function(err,block){
+var Tx = block.transactions[0].input;
+
+//Tx = JSON.stringify(Tx);
+console.log(Tx);
 });
