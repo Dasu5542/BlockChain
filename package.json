@@ -1,0 +1,33 @@
+{
+  "name": "ecdsa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "async": "^3.2.0",
+    "body-parser": "^1.19.0",
+    "date-utils": "^1.2.21",
+    "eccrypto": "^1.1.6",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-mysql-session": "^2.1.6",
+    "express-session": "^1.17.1",
+    "mysql": "^2.18.1",
+    "pdf-parse": "^1.1.1",
+    "supervisor": "^0.12.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dasu5542/BlockChain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dasu5542/BlockChain/issues"
+  },
+  "homepage": "https://github.com/Dasu5542/BlockChain#readme"
+}

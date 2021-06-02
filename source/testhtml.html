@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>scriptTest</title>      
+        <script>
+            function booklist(){
+                var rows = [{"book_name":"어린왕자","book_price":15200,"img":"prince.jpg"}, {"Name":"어린왕자2","img":"prince2.jpg"}]
+                for(var i = 0 ; i < rows.length; i++){
+                    document.write("<div class=\"col-xl-4 col-lg-4 col-md-6 col-sm-6\">");
+                    document.write("<div class=\"single-popular-items mb-50 text-center\">");
+                    document.write("<div class=\"popular-img\">");
+                    document.write("<img src=\"assets/img/gallery/" + rows[i].book_img + " alt=\"\">");
+                    document.write("<div class=\"img-cap\">");
+                    document.write("<a href=\"/book?name="+ rows[i].book_name + "\"><span>자세히보기</span></a>");
+                    document.write("</div>");
+                    document.write("<div class=\"favorit-items\">");
+                    document.write("<span class=\"flaticon-heart\"></span>");
+                    document.write("</div>");
+                    document.write("<div class=\"popular-caption\">");
+                    document.write("<h3><a href=\"product_details.html\">"+ rows[i].book_name+"</a></h3>");
+                    document.write("<span>"+rows[i].book_price+"원</span>");
+                    document.write("</div>")
+                    document.write("</div>")
+                    document.write("</div>")
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <script language="javascript">
+                var rows = [{"book_name":"어린왕자","book_price":15200,"img":"prince.jpg"}, {"Name":"어린왕자2","img":"prince2.jpg"}]
+                for(var i = 0 ; i < rows.length; i++){
+                    document.write("<div class=\"col-xl-4 col-lg-4 col-md-6 col-sm-6\">");
+                    document.write("<div class=\"single-popular-items mb-50 text-center\">");
+                    document.write("<div class=\"popular-img\">");
+                    document.write("<img src=\"assets/img/gallery/" + rows[i].book_img + " alt=\"\">");
+                    document.write("<div class=\"img-cap\">");
+                    document.write("<a href=\"/book?name="+ rows[i].book_name + "\"><span>자세히보기</span></a>");
+                    document.write("</div>");
+                    document.write("<div class=\"favorit-items\">");
+                    document.write("<span class=\"flaticon-heart\"></span>");
+                    document.write("</div>");
+                    document.write("<div class=\"popular-caption\">");
+                    document.write("<h3><a href=\"product_details.html\">"+ rows[i].book_name+"</a></h3>");
+                    document.write("<span>"+rows[i].book_price+"원</span>");
+                    document.write("</div>")
+                    document.write("</div>")
+                    document.write("</div>")
+                }
+        </script>
+    </body>
+</html>
+
+<!--
+    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+        <div class="single-popular-items mb-50 text-center">
+            <div class="popular-img">
+                <img src="assets/img/gallery/prince2.jpg" alt="">
+                <div class="img-cap">
+                    <a href="/book?name=어린왕자"><span>자세히보기</span></a>
+                </div>
+                <div class="favorit-items">
+                    <span class="flaticon-heart"></span>
+                </div>
+            </div>
+            <div class="popular-caption">
+                <h3><a href="product_details.html">어린왕자 5년 후 나에게 Q&A a day</a></h3>
+                <span>15,120원</span>
+            </div>
+        </div>
+    </div>
+-->
