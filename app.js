@@ -47,19 +47,35 @@ app.use(
 );
 */
 
-//  Main
+
+/*
+    [ main page ]
+    있는것 : 메인페이지
+    없는것 :
+*/
+
+
 app.get('/', (req, res)=>{
     res.render("index");
 });
 
-// Relate Login
+
+/*
+    [ Login ]
+    있는것 : 로그인, 회원가입 
+    없는것 :
+*/
 app.get('/login', (req, res)=>{
-    res.render("login");
+    if(req.session.isLogined){
+        console.log("################### " + req.session.isLogined);
+        res.redirect("/mypage");
+    }
+    else res.render("login");
 });
 
 app.post('/login', function(req,res){
     var sql = 'SELECT * FROM user WHERE user_id=? and user_pw=?';
-    var params = [req.body.user_id, req.body.user_pw];
+    var params = [req.body.user_id, req.body.user_pw]
     console.log(req.body.user_id+ " " +  req.body.user_pw);
     conn.query(sql, params, function(err,rows,fields){
         if(err){
@@ -72,7 +88,6 @@ app.post('/login', function(req,res){
             res.redirect("/login");
         }
         else{
-            console.log(rows[0]);
             req.session.user_id = rows[0].user_id;
             req.session.isLogined = true;
             req.session.save(()=>{
@@ -102,26 +117,30 @@ app.post('/register', function(req,res){
 });
 
 
-//  Relate MyPage
-app.get('/mypage', function(req, res){
-    var sql = 'SELECT * FROM user WHERE user_id=?';
-    var params = req.session.user_id
-    conn.query(sql, params, function(err,rows,fields){
-        res.render("mypage",{'user_id':rows[0].user_id,
-                             'user_phone':rows[0].user_phone,
-                             'user_name':rows[0].user_name,
-                             'user_email':rows[0].user_email});
-    });
-});
+/*
+    [ mypage ]
+    있는것 : 마이페이지, 키등록, 키신청, 뷰어, 회원정보수정
+    없는것 : 이관신청, 이관받기, 장바구니, 책보기
+*/
+
+
+app.get('/mypage', (req, res)=>{
+    console.log("hi???? " + req.session.user_id);
+    res.render('mypage', {'user_id':req.session.user_id});
+})
 
 app.get('/revise', function(req, res){
     var sql = 'SELECT * FROM user WHERE user_id=?';
-    var params = req.session.user_id
+    var params = req.session.user_id;
     conn.query(sql, params, function(err, rows, fields){
-        res.render("revise");
+        res.render("revise", 
+        {'user_id':rows[0].user_id,
+        'user_pw':rows[0].user_pw,
+        'user_phone':rows[0].user_phone,
+        'user_name':rows[0].user_name,
+        'user_email':rows[0].user_email});
     })
 });
-
 
 app.post('/revise', function(req, res){
     var sql = 'UPDATE user SET user_pw=?, user_name=?, user_email=?, user_phone=? WHERE user_id=?';
@@ -138,12 +157,31 @@ app.post('/revise', function(req, res){
     })
 });
 
-app.get('/booklist', function(req, res){
-    
+app.get('/key', (req, res)=>{
+    res.render('howtogetkey', {'user_id':req.session.user_id});
 });
 
-// 유저 정보에 키신청 여부 추가 한번 했으면 다신 못하도록 만들
-app.get('/applykey', function(req, res){
+app.get('/applykey', (req,res)=>{
+    res.render('applykey', {'user_id':req.session.user_id})
+});
+
+app.post('/applykey', (req,res)=>{
+    var sql = 'UPDATE user SET user_publickey=? WHERE user_id=?';
+    var key = req.body.user_publickey;
+    var params=[key, req.session.user_id];
+    if(key.length != 64){
+        res.render("failPage", {'user_id':req.session.user_id});
+    }
+    else{
+        conn.query(sql, params, (err, rows, fields)=>{
+            if(err) throw err;
+            console.log("success");
+            res.render("successPage", {'user_id':req.session.user_id});
+        })
+    }
+
+});
+app.get('/createkey', function(req, res){
     if(req.session.displayName){
         console.log(req.session.displayName);
     } 
@@ -155,48 +193,66 @@ app.get('/applykey', function(req, res){
     console.log(pub + ' ' + req.session.user_id);
     conn.query(sql, params, function(err, rows, fields){
         console.log(priv);
-        res.render( 'ecdsa', {'priv':strPriv});
+        res.render( 'createkey', {'priv':strPriv, 'user_id':req.session.user_id});
     })
 })
 
-app.get('/cart', function(req, res){
-    var sql = 'SELECT * FROM book WHERE user_id=?'
-    var params = req.session.user_id;
-    conn.query(sql, params, function(err,rows,fields){
-        console.log(rows[0]);
-    })
-    res.render('/cart',{"rows":rows, "length":rows.length});
-})
-
-app.get('/book', function(req,res){
-    var sql = 'SELECT * FROM book WHERE book_name=?'
-    var params = req.query.user_name;
-    console.log(params);
-    conn.query(sql, params, function(err, rows, fields){
-        res.render('book', {"rows":rows});
-    })
-})
+/*
+    [ Book ]
+    있는것 : 책찾기, 책필드
+    없는것 : 책구매, 장바구니담기
+*/
 
 app.post('/Search', function(req, res){
-    var sql = 'SELECT * FROM book WHERE book_name=?'
-    var params = req.body.book_name;
+    var sql = 'SELECT * FROM book WHERE book_name LIKE ?'
+    var params = "%" + req.body.book_name + "%";
+    console.log(params);
     conn.query(sql, params,function(err,rows,fields){
-        //var rowData = JSON.stringify(rows);
-        res.render('shop');
+        console.log(rows);
+        res.render('shop', {"rows":JSON.stringify(rows)});
     });
 });
 
-app.get('/purchase', function(req, res){
-    var time = new Date();
-    var sql = 'INSERT INTO purchase(user_id, book_isbn, purchase_date)VALUES(?,?,?)';
-    var query = [req.session.user_id, req.query.user_name, time];
-    res.render("confirmation", {'user_id':req.session.user_id, 'book_name':req.query.user_name, 'time':time});
-    conn.query(sql, query, function(err,rows,fields){
-        console.log(rows)
-        console.log("Purchase Info:  7b226976223a7b2274797065223a22427566666572222c2264617461223a5b3232332c3139382c3133382c3233382c36342c3136372c34332c3131362c34332c3138312c3232342c3233312c3231372c3135302c3138372c38345d7d2c22657068656d5075626c69634b6579223a7b2274797065223a22427566666572222c2264617461223a5b342c3137372c3232362c32382c382c3231392c3234372c35332c39382c31302c35332c3133312c3138302c38332c32392c35392c3231362c33312c3135362c3130382c34382c32322c38382c3130382c3230372c3232322c3139302c3137352c3232362c3135332c38302c33382c3232362c31302c36382c3137332c3138302c3130352c3138302c3138392c3231322c3136352c3235342c3232332c3138352c32362c32312c31372c32382c3139332c38342c3234312c31312c3139382c3230372c3230312c3234362c3233392c3231342c31392c3132302c36342c3132392c3235312c38355d7d2c2263697068657274657874223a7b2274797065223a22427566666572222c2264617461223a5b3132322c3233302c3130362c3132332c39382c3232372c3132312c382c3235342c37342c39322c3130312c3231362c3133392c35372c37315d7d2c226d6163223a7b2274797065223a22427566666572222c2264617461223a5b3131392c31362c3234362c32302c37372c3132392c3131332c3133332c3235302c3139392c3137332c3132312c32352c3230312c3134302c3137302c3133332c3233362c36332c3139362c3230312c3230352c36362c3233312c3130392c36362c3133352c3233322c3138362c3130332c3232302c3232395d7d7d\nPlatform: A : 0x01\nTx type Purchase/Transfer: Purchase : 0x00");
-    });
+app.get('/book', function(req,res){
+    var sql = 'SELECT * FROM book WHERE book_name=?'
+    var params = req.query.book_name;
+    conn.query(sql, params, function(err, rows, fields){
+        console.log(rows);
+        res.render('book', {"rows":JSON.stringify(rows)});
+    })
 })
 
+app.get('/purchase', function(req, res){
+    var sql2 = 'SELECT * FROM book WHERE book_name=?'
+    var query2 = req.query.book_name;
+    conn.query(sql2, query2, function(err,rows,fields){
+        var time = new Date();
+        var sql = 'INSERT INTO purchase(user_id, book_name, purchase_date, book_img)VALUES(?,?,?,?)';
+        var query = [req.session.user_id, rows[0].book_name, time, rows[0].book_img];
+        console.log(query);
+        conn.query(sql, query, function(err,rows,fields){
+            if(err) console.log(err);
+            else console.log(rows);
+        });
+        res.render("confirmation", {
+        'user_id':req.session.user_id
+        , 'book_name':rows[0].book_name
+        , 'book_isbn':rows[0].book_isbn
+        , 'book_auth':rows[0].book_auth
+        , 'book_price':rows[0].book_price
+        , 'time':time});
+    });
+})
+// 추가할 코드(테스트중)
+
+app.get('/mypage', (req, res)=>{
+    var sql = "SELECT distinct * FROM purchase WHERE user_id=?";
+    var params = req.session.user_id;
+
+    conn.query(sql, params, function(err, rows, fields){
+        res.render('mypage', {'user_id':req.session.user_id, 'rows':JSON.stringify(rows)});
+    });
+})
 
 app.post('/pdfviewer', (req, res)=>{
     var locate = "./source/docs/" + req.body.book_name;
@@ -206,9 +262,6 @@ app.post('/pdfviewer', (req, res)=>{
     res.setHeader('Content-type','application/pdf');
     stream.pipe(res);
 });
-
-
-
 
 // Start
 app.listen(3000, ()=>{
