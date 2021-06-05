@@ -318,6 +318,49 @@ async function sendTx(isbn){
 
 //Test하는중...
 
+function hexToBytes(hex) {
+    for (var bytes = [], c = 0; c < hex.length; c += 2)
+    bytes.push(parseInt(hex.substr(c, 2), 16));
+    console.log(bytes)
+    return bytes;
+}
+
+function toHex(arr){
+    var hexArr="";
+    //
+    for(var i=0; i<arr.length; i++){
+        var data = arr[i].toString(16)
+        if(data.length!=2){
+            data = '0'+data
+        }
+        hexArr+=(data+" ");
+    }
+    //console.log(hexArr)
+    return hexArr;
+}
+
+function makeData(objData){
+    var ivd, ephemPublicKeyd,ciphertextd,macd;
+    console.log(objData.iv.data)
+    
+    ivd = Buffer.from(toHex(objData.iv.data));
+    ephemPublicKeyd = Buffer.from(toHex(objData.ephemPublicKey.data));
+    ciphertextd = Buffer.from(toHex(objData.ciphertext.data));
+    macd = Buffer.from(toHex(objData.mac.data));
+
+    return {
+        iv: ivd,
+        ephemPublicKey: ephemPublicKeyd,
+        ciphertext: ciphertextd,
+        mac: macd,
+    };
+    //return Buffer.from(JSON.stringify(objData))
+}
+async function EccDecrypt(objData){
+    const obj = makeData(objData)
+    console.log(obj)
+    //await CustumEnc.eccDec(makeData(objData));
+}
 
 async function getTx(){
     console.log("getTx")
@@ -329,12 +372,12 @@ async function getTx(){
     //console.log("pur/trf",PurTranData)
 
     let BookData = StrData.substr(0,StrData.length-4)
-    console.log(BookData);
+    //console.log(BookData);
 
     const ObjBookData = JSON.parse(BookData)
-    console.log(ObjBookData)
-
-    console.log(Buffer.from(ObjBookData))
+    //console.log(ObjBookData)
+    
+    EccDecrypt(ObjBookData);
 
 }
 getTx();
