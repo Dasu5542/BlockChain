@@ -4,6 +4,7 @@ var eccrypto        = require("eccrypto");
 var fs              = require('fs');
 var app             = express();
 var Custummodule    = require('./script/CustumModule');
+var CustumEnc       = require('./script/decrypt');
 var mysql           = require('mysql');
 var bodyParser      = require('body-parser');
 var session         = require('express-session');
@@ -238,6 +239,8 @@ function stringToHex(str){
 }
 
 var dataString = stringToHex('{"iv":{"type":"Buffer","data":[223,198,138,238,64,167,43,116,43,181,224,231,217,150,187,84]},"ephemPublicKey":{"type":"Buffer","data":[4,177,226,28,8,219,247,53,98,10,53,131,180,83,29,59,216,31,156,108,48,22,88,108,207,222,190,175,226,153,80,38,226,10,68,173,180,105,180,189,212,165,254,223,185,26,21,17,28,193,84,241,11,198,207,201,246,239,214,19,120,64,129,251,85]},"ciphertext":{"type":"Buffer","data":[122,230,106,123,98,227,121,8,254,74,92,101,216,139,57,71]},"mac":{"type":"Buffer","data":[119,16,246,20,77,129,113,133,250,199,173,121,25,201,140,170,133,236,63,196,201,205,66,231,109,66,135,232,186,103,220,229]}}');
+//var bookData = 
+//var dataString = web3.eth.encodeParameters(['string'],[bookData]);
 
 var PlatfromIndex = '02';
 var Purchase = '01';
@@ -257,10 +260,12 @@ var txHash = web3.eth.sendTransaction({
 
 console.log("----------");
 
-var i;
 web3.eth.getBlock(1,true,function(err,block){
 var Tx = block.transactions[0].input;
 
 //Tx = JSON.stringify(Tx);
-console.log(Tx);
+//console.log(Tx);
 });
+
+console.log("----------");
+CustumEnc.eccB("hello");
