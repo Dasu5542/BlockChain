@@ -283,14 +283,6 @@ app.get('/insertBook', function(req,res){
 
 /* Block Chain */
 
-var toAddress = '0xdd79a79925015135A3e85c33a318ff7442C8fa8D';
-var myAddress = '0xee971fE02C4ECc26bb506cad486E4D36B931551e';
-
-function stringToHex(str){
-    const buf = Buffer.from(str, 'utf8');
-    return buf.toString('hex');
-}
-
 async function makeData(MSG){
     console.log(".Do Enc hello.");
     var dataStr;
@@ -303,33 +295,34 @@ async function makeData(MSG){
     //console.log("DataStr  :",dataStr)
     Str_data = BookData+PlatfromIndex+Purchase;
     var ABI_data = web3.eth.abi.encodeParameter('string',Str_data);
-    /* TEST 
-    var data_1 = web3.eth.abi.decodeParameter('string',dataString);
-    console.log(data_1)
-    */
+    console.log(ABI_data)
     return ABI_data;
 }
 
-//Test하는중...
-var dataStr = makeData("hello!");
-console.log(typeof(dataStr))
+async function sendTx(){
+    var toAddress = '0xdd79a79925015135A3e85c33a318ff7442C8fa8D';
+    var myAddress = '0xee971fE02C4ECc26bb506cad486E4D36B931551e';
 
-/*
-var txHash = web3.eth.sendTransaction({
-    from: myAddress,
-    to: toAddress,
-    data: dataStr
-    }, function(err, TxID){ if(!err) {
-        //web3.eth.getTransaction(TxID).then(console.log);
+    var dataStr = await makeData("msg");
+    
+    web3.eth.sendTransaction({
+        from: myAddress,
+        to: toAddress,
+        data: dataStr
         }
-    }
-);
-*/
+    );
+    
+}
 
-
+//Test하는중...
 web3.eth.getBlock(1,true,function(err,block){
 var Tx = block.transactions[0].input;
 
 //Tx = JSON.stringify(Tx);
 //console.log(Tx);
 });
+
+
+var data_1 = web3.eth.abi.decodeParameter('string',dataString);
+    console.log(data_1)
+    
