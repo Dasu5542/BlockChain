@@ -1,3 +1,4 @@
+const { json } = require("body-parser");
 var eccrypto = require("eccrypto");
 
 var privateKeyA = eccrypto.generatePrivate();
@@ -8,14 +9,11 @@ var publicKeyB = eccrypto.getPublic(privateKeyB);
 var CumtumEnc = {};
 
 console.log(privateKeyA);
+
 // Encrypting the message for B.
-CumtumEnc.eccB = function(MSG){
-  eccrypto.encrypt(publicKeyB, Buffer.from(MSG)).then(function(encrypted) {
-    // B decrypting the message.
-    eccrypto.decrypt(privateKeyB, encrypted).then(function(plaintext) {
-      console.log("Message to part B:", plaintext.toString());
-    });
-  });
+CumtumEnc.eccB = async function(MSG){
+  console.log("in ECC-B")
+  return await eccrypto.encrypt(publicKeyB, Buffer.from(MSG))
 }
 
 // Encrypting the message for A.
