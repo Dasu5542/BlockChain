@@ -1,10 +1,11 @@
 //  Module
 var express         = require('express');
 var eccrypto        = require("eccrypto");
+var crypto          = require("crypto");
 var fs              = require('fs');
 var app             = express();
 var Custummodule    = require('./script/CustumModule');
-var CustumEnc       = require('./script/decrypt');
+var CustomEnc       = require('./script/decrypt');
 var mysql           = require('mysql');
 var bodyParser      = require('body-parser');
 var session         = require('express-session');
@@ -284,10 +285,9 @@ app.get('/insertBook', function(req,res){
 /* Block Chain */
 
 async function makeData(MSG){
-    console.log(".Do Enc hello.");
-    var dataStr;
-    const bookData = await CustumEnc.eccEnc(MSG);
-    console.log(bookData);
+    console.log(".Do Sign MSG.");
+    const bookData = await CustomEnc.ecdsaSign(MSG);
+    //console.log("............",bookData);
     var BookData = JSON.stringify(bookData);
     
     var PlatfromIndex = '02';
@@ -301,8 +301,8 @@ async function makeData(MSG){
 }
 
 async function sendTx(isbn){
-    var toAddress = '0xce7ae78CA65C0324167C739F74444831d1716818';
-    var myAddress = '0x62E58B4bB77d51810349242d7A6B816f07B4ED7B';
+    var toAddress = '0xa74d2A27407e64405Fb5715d628323EB0eFf0fbC';
+    var myAddress = '0x631b9463ce44D84d2C1219981c418225F7Da929C';
 
     var dataStr = await makeData(isbn);
 
@@ -314,7 +314,7 @@ async function sendTx(isbn){
     );
     
 }
-//sendTx("5132");
+sendTx("5132");
 
 //Test하는중...
 
@@ -335,18 +335,18 @@ function toHex(arr){
         }
         hexArr+=(data);
     }
-    console.log(hexArr)
+    //console.log(hexArr)
     return hexArr;
 }
 
 function makeData2(objData){
     var ivd, ephemPublicKeyd,ciphertextd,macd;
-    //console.log(objData.iv.data.length)
+    //console.log(objData.iv.data)
     
     ivd = Buffer.from(toHex(objData.iv.data),'hex');
-    ephemPublicKeyd = Buffer.from(toHex(objData.ephemPublicKey.data));
-    ciphertextd = Buffer.from(toHex(objData.ciphertext.data));
-    macd = Buffer.from(toHex(objData.mac.data));
+    ephemPublicKeyd = Buffer.from(toHex(objData.ephemPublicKey.data),'hex');
+    ciphertextd = Buffer.from(toHex(objData.ciphertext.data),'hex');
+    macd = Buffer.from(toHex(objData.mac.data),'hex');
 
     return {
         iv: ivd,
@@ -358,25 +358,27 @@ function makeData2(objData){
 async function EccDecrypt(objData){
     const obj = makeData2(objData)
     console.log(obj)
-    await CustumEnc.eccDec(obj);
+    await CustomEnc.eccDec(obj);
 }
 
 async function getTx(){
     //console.log("getTx")
-    var BLOCK = await web3.eth.getBlock(1,true);
+    var BLOCK = await web3.eth.getBlock(8,true);
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
-    console.log(StrData)
+    //console.log(StrData)
     let PurTranData = StrData.substr(StrData.length-2,2)
     //console.log("pur/trf",PurTranData)
 
     let BookData = StrData.substr(0,StrData.length-4)
-    //console.log(BookData);
-
-    const ObjBookData = JSON.parse(BookData)
-    //console.log(ObjBookData)
+    console.log(BookData);
     
-    EccDecrypt(ObjBookData);
+    const ObjBookData = JSON.parse(BookData)
+    var data = ObjBookData.data;
+    buffData=Buffer.from(toHex(data),'hex')
+    console.log(buffData.length)
+    //EccDecrypt(ObjBookData);
+    CustomEnc.ecdsaVerify("5132",buffData)
 
 }
 getTx();
