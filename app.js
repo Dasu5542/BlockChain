@@ -287,7 +287,7 @@ async function makeData(MSG){
     console.log(".Do Enc hello.");
     var dataStr;
     const bookData = await CustumEnc.eccEnc(MSG);
-    //console.log(bookData);
+    console.log(bookData);
     var BookData = JSON.stringify(bookData);
     
     var PlatfromIndex = '02';
@@ -321,7 +321,7 @@ async function sendTx(isbn){
 function hexToBytes(hex) {
     for (var bytes = [], c = 0; c < hex.length; c += 2)
     bytes.push(parseInt(hex.substr(c, 2), 16));
-    console.log(bytes)
+    //console.log(bytes)
     return bytes;
 }
 
@@ -333,17 +333,17 @@ function toHex(arr){
         if(data.length!=2){
             data = '0'+data
         }
-        hexArr+=(data+" ");
+        hexArr+=(data);
     }
-    //console.log(hexArr)
+    console.log(hexArr)
     return hexArr;
 }
 
-function makeData(objData){
+function makeData2(objData){
     var ivd, ephemPublicKeyd,ciphertextd,macd;
-    console.log(objData.iv.data)
+    //console.log(objData.iv.data.length)
     
-    ivd = Buffer.from(toHex(objData.iv.data));
+    ivd = Buffer.from(toHex(objData.iv.data),'hex');
     ephemPublicKeyd = Buffer.from(toHex(objData.ephemPublicKey.data));
     ciphertextd = Buffer.from(toHex(objData.ciphertext.data));
     macd = Buffer.from(toHex(objData.mac.data));
@@ -354,20 +354,19 @@ function makeData(objData){
         ciphertext: ciphertextd,
         mac: macd,
     };
-    //return Buffer.from(JSON.stringify(objData))
 }
 async function EccDecrypt(objData){
-    const obj = makeData(objData)
+    const obj = makeData2(objData)
     console.log(obj)
-    //await CustumEnc.eccDec(makeData(objData));
+    await CustumEnc.eccDec(obj);
 }
 
 async function getTx(){
-    console.log("getTx")
+    //console.log("getTx")
     var BLOCK = await web3.eth.getBlock(1,true);
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
-    //console.log(StrData)
+    console.log(StrData)
     let PurTranData = StrData.substr(StrData.length-2,2)
     //console.log("pur/trf",PurTranData)
 
