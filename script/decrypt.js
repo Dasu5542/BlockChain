@@ -11,9 +11,14 @@ var CumtumEnc = {};
 console.log(privateKeyA);
 
 // Encrypting the message for B.
-CumtumEnc.eccB = async function(MSG){
-  console.log("in ECC-B")
+CumtumEnc.eccEnc = async function(MSG){
+  console.log("in ECC-Enc")
   return await eccrypto.encrypt(publicKeyB, Buffer.from(MSG))
+}
+
+CumtumEnc.eccDec = async function(MSG){
+  console.log("in ECC-Dec")
+  return await eccrypto.decrypt(publicKeyB, Buffer.from(MSG))
 }
 
 // Encrypting the message for A.

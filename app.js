@@ -286,7 +286,8 @@ app.get('/insertBook', function(req,res){
 async function makeData(MSG){
     console.log(".Do Enc hello.");
     var dataStr;
-    const bookData = await CustumEnc.eccB(MSG);
+    const bookData = await CustumEnc.eccEnc(MSG);
+    //console.log(bookData);
     var BookData = JSON.stringify(bookData);
     
     var PlatfromIndex = '02';
@@ -295,16 +296,16 @@ async function makeData(MSG){
     //console.log("DataStr  :",dataStr)
     Str_data = BookData+PlatfromIndex+Purchase;
     var ABI_data = web3.eth.abi.encodeParameter('string',Str_data);
-    console.log(ABI_data)
+    //console.log(ABI_data)
     return ABI_data;
 }
 
-async function sendTx(){
-    var toAddress = '0xdd79a79925015135A3e85c33a318ff7442C8fa8D';
-    var myAddress = '0xee971fE02C4ECc26bb506cad486E4D36B931551e';
+async function sendTx(isbn){
+    var toAddress = '0xce7ae78CA65C0324167C739F74444831d1716818';
+    var myAddress = '0x62E58B4bB77d51810349242d7A6B816f07B4ED7B';
 
-    var dataStr = await makeData("msg");
-    
+    var dataStr = await makeData(isbn);
+
     web3.eth.sendTransaction({
         from: myAddress,
         to: toAddress,
@@ -313,16 +314,28 @@ async function sendTx(){
     );
     
 }
+//sendTx("5132");
 
 //Test하는중...
-web3.eth.getBlock(1,true,function(err,block){
-var Tx = block.transactions[0].input;
-
-//Tx = JSON.stringify(Tx);
-//console.log(Tx);
-});
 
 
-var data_1 = web3.eth.abi.decodeParameter('string',dataString);
-    console.log(data_1)
-    
+async function getTx(){
+    console.log("getTx")
+    var BLOCK = await web3.eth.getBlock(1,true);
+    var TxData = BLOCK.transactions[0].input;
+    let StrData = web3.eth.abi.decodeParameter('string',TxData);
+    //console.log(StrData)
+    let PurTranData = StrData.substr(StrData.length-2,2)
+    //console.log("pur/trf",PurTranData)
+
+    let BookData = StrData.substr(0,StrData.length-4)
+    console.log(BookData);
+
+    const ObjBookData = JSON.parse(BookData)
+    console.log(ObjBookData)
+
+    console.log(Buffer.from(ObjBookData))
+
+}
+getTx();
+                                                                                                                                                                                           
