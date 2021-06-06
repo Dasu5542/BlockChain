@@ -15,7 +15,7 @@ var date = new Date();
 var Web3            = require('web3');
 var web3            = new Web3();
 web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
-/*
+
 //  DBConnect
 var MySQLOption = {
     host : 'localhost',
@@ -27,14 +27,14 @@ var MySQLOption = {
 
 var conn = mysql.createConnection(MySQLOption);
 conn.connect();
-*/
+
 //  View settings
 app.set('views', __dirname + '/source');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(express.static('source'));
-/*
+
 //  Use session
 var sessionStore = new MySQLStore(MySQLOption); 
 app.use(
@@ -46,7 +46,6 @@ app.use(
         saveUninitialized:true
     })
 );
-*/
 
 
 /*
@@ -120,15 +119,29 @@ app.post('/register', function(req,res){
 
 /*
     [ mypage ]
-    있는것 : 마이페이지, 키등록, 키신청, 뷰어, 회원정보수정
-    없는것 : 이관신청, 이관받기, 장바구니, 책보기
+    있는것 : 마이페이지, 키등록, 키신청, 뷰어, 회원정보수정, 장바구니, 책보기
+    없는것 : 이관신청, 이관받기, 
 */
 
-
 app.get('/mypage', (req, res)=>{
-    console.log("hi???? " + req.session.user_id);
-    res.render('mypage', {'user_id':req.session.user_id});
+    var sql = "SELECT distinct * FROM purchase WHERE user_id=?";
+    var params = req.session.user_id;
+    conn.query(sql, params, function(err, rows, fields){
+        res.render('mypage', {'user_id':req.session.user_id, 'rows':JSON.stringify(rows)});
+        
+    });
 })
+
+
+app.post('/pdfviewer', (req, res)=>{
+    var locate = "./source/docs/" + req.body.book_name;
+    console.log(req.body.book_name);
+    var stream = fs.ReadStream('./source/docs/'+req.body.book_name + ".pdf");//뒤에 책이름 추가.
+    filename=encodeURIComponent("capstone.pdf");
+    res.setHeader('Content-disposition', 'inlinel filename="'+filename+'"');
+    res.setHeader('Content-type','application/pdf');
+    stream.pipe(res);
+});
 
 app.get('/revise', function(req, res){
     var sql = 'SELECT * FROM user WHERE user_id=?';
@@ -200,8 +213,8 @@ app.get('/createkey', function(req, res){
 
 /*
     [ Book ]
-    있는것 : 책찾기, 책필드
-    없는것 : 책구매, 장바구니담기
+    있는것 : 책찾기, 책필드, 장바구니, 책구매
+    없는것 :  
 */
 
 app.post('/Search', function(req, res){
@@ -244,26 +257,59 @@ app.get('/purchase', function(req, res){
         , 'time':time});
     });
 })
-// 추가할 코드(테스트중)
-
-app.get('/mypage', (req, res)=>{
-    var sql = "SELECT distinct * FROM purchase WHERE user_id=?";
-    var params = req.session.user_id;
-
-    conn.query(sql, params, function(err, rows, fields){
-        res.render('mypage', {'user_id':req.session.user_id, 'rows':JSON.stringify(rows)});
+app.get('/cart', function(req, res){
+    var sql2 = 'SELECT * FROM book WHERE book_name=?'
+    var query2 = req.query.book_name;
+    conn.query(sql2, query2, function(err,rows,fields){
+        var time = new Date();
+        var sql = 'INSERT INTO cart(book_name, book_price, book_img, user_id)VALUES(?,?,?,?)';
+        var query = [rows[0].book_name, rows[0].book_price, rows[0].book_img, req.session.user_id];
+        console.log(query);
+        conn.query(sql, query, function(err,rows,fields){
+            if(err) console.log(err);
+            else console.log(rows);
+        });
+        res.render("cart", {
+        'user_id':req.session.user_id
+        , 'book_name':rows[0].book_name
+        , 'book_isbn':rows[0].book_isbn
+        , 'book_auth':rows[0].book_auth
+        , 'book_price':rows[0].book_price
+        , 'time':time});
     });
 })
 
-app.post('/pdfviewer', (req, res)=>{
-    var locate = "./source/docs/" + req.body.book_name;
-    var stream = fs.ReadStream('./source/docs/capstone.pdf');
-    filename=encodeURIComponent("capstone.pdf");
-    res.setHeader('Content-disposition', 'inlinel filename="'+filename+'"');
-    res.setHeader('Content-type','application/pdf');
-    stream.pipe(res);
+app.get('/mycart', function(req, res){
+    var sql = 'SELECT * FROM cart WHERE user_id=?';
+    var query = req.session.user_id;
+    conn.query(sql, query, function(err, rows, fields){
+        console.log(rows);
+        res.render('mycart', {'user_id':req.session.user_id, "rows":JSON.stringify(rows)});
+    })
+})
+// 추가할 코드(테스트중)
+
+app.get('/sendtransfer', function(req, res){
+    var sql = "SELECT distinct * FROM purchase WHERE user_id=?";
+    var params = req.session.user_id;
+    conn.query(sql, params, function(err, rows, fields){
+        res.render('sendtransfer', {'user_id':req.session.user_id, 'rows':JSON.stringify(rows)});
+    });
 });
 
+// [ 실질적으로 블록체인 네트워크에 데이터 올리는 곳]
+app.post('/sendtransfer', function(req, res){
+    
+});
+
+
+app.get('/recvtransfer', function(req, res){
+
+});
+// [ 실질적으로 블록체인 네트워크에 데이터 가져오는 곳]
+app.post('/recvtransfer', function(req, res){
+
+});
 // Start
 app.listen(3000, ()=>{
     //console.log('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
