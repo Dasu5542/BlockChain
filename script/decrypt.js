@@ -43,7 +43,7 @@ var publicKey = eccrypto.getPublic(privateKey);
 CustomEnc.ecdsaSign = async function(strISBN){
   // Always hash you message to sign!
   var msg = crypto.createHash("sha256").update(strISBN).digest();
-  return await eccrypto.sign(privateKey, msg).then(function(sig){console.log("...............",sig)})
+  return await eccrypto.sign(privateKey, msg)
 }
 CustomEnc.ecdsaVerify = async function(strISBN,sig){
   var msg = crypto.createHash("sha256").update(strISBN).digest();

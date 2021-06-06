@@ -14,7 +14,7 @@ var MySQLStore      = require('express-mysql-session')(session);
 var date = new Date();
 var Web3            = require('web3');
 var web3            = new Web3();
-web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
+web3.setProvider(new Web3.providers.HttpProvider("http://203.234.19.96:8545"));
 
 //  DBConnect
 var MySQLOption = {
@@ -337,22 +337,22 @@ app.get('/sendtransfer', function(req, res){
 
 // [ 실질적으로 블록체인 네트워크에 데이터 올리는 곳]
 app.post('/sendtransfer', function(req, res){
-    console.log(req.body.book_name);
     var book_name = req.body.book_name;
     var sql = "SELECT * FROM book WHERE book_name = ?"
-    for(var i = 0; i < book_name.length; i++){
-        var query = req.body.book_name[i];
+    for(var i = 0; i < 1; i++){
+        var query = req.body.book_name;
         conn.query(sql, query, function(err, rows, fields){
-            sendTx(rows[i].book_isbn);
+        	console.log(rows[0].book_isbn);
+        	sendTx(rows[0].book_isbn);
         });
     }
-    var sql2 = "DELETE TABLE purchase WHERE book_name = ?  and user_id=?"
-    for(i = 0; i < book_name.length; i++){
-        var query = req.body.book_name[i];
-        conn.query(sql, query, function(err, rows, fields){
+   /* var sql2 = "DELETE FROM purchase WHERE book_name = ?  and user_id=?"
+    for(i = 0; i < 1; i++){
+        var query2 = [req.body.book_name, req.session.user_id]; 
+        conn.query(sql2, query2, function(err, rows, fields){
         });
-    }
-    res.render("successtrsansfer");
+    }*/
+    res.render("successTransfer");
 });
 
 
@@ -377,10 +377,9 @@ app.get('/insertBook', function(req,res){
 /* Block Chain */
 
 async function makeData(MSG){
-    console.log(".Do Sign MSG.");
+    console.log(".Do Sign MSG:", MSG);
     const bookData = await CustomEnc.ecdsaSign(MSG);
     var BookData = JSON.stringify(bookData);
-    
     var PlatfromIndex = '02';
     var Purchase = '01';
 
@@ -392,17 +391,19 @@ async function makeData(MSG){
 async function sendTx(isbn){
     var toAddress = '0xa74d2A27407e64405Fb5715d628323EB0eFf0fbC';
     var myAddress = '0x631b9463ce44D84d2C1219981c418225F7Da929C';
-
+	
     var dataStr = await makeData(isbn);
-
+    	//console.log("2",dataStr)
     web3.eth.sendTransaction({
         from: myAddress,
         to: toAddress,
         data: dataStr
         }
     );
+   console.log('hello')
     
 }
+
 sendTx("5132");
 
 //Test하는중...
@@ -421,13 +422,15 @@ function toHex(arr){
 }
 
 async function getTx(ISBNstr){
+    console.log("v");
     var BLOCK = await web3.eth.getBlock(8,true);
+        console.log("v",BLOCK);
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
     let PurTranData = StrData.substr(StrData.length-2,2)
 
     let BookData = StrData.substr(0,StrData.length-4)
-    console.log(BookData);
+
     
     const ObjBookData = JSON.parse(BookData)
     var data = ObjBookData.data;
@@ -437,5 +440,5 @@ async function getTx(ISBNstr){
     CustomEnc.ecdsaVerify(ISBNstr,buffData)
 
 }
-getTx();
+getTx("5132");
                                                                                                                                                                                            
