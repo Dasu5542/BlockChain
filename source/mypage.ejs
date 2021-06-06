@@ -52,7 +52,7 @@
                                 <ul id="navigation">  
                                         <ul class="submenu">
                                             <li><a href="/login">Login</a></li>
-                                            <li><a href="/cart">Cart</a></li>
+                                            <li><a href="/mycart">Cart</a></li>
                                             <li><a href="elements.html">Element</a></li>
                                             <li><a href="confirmation.html">Confirmation</a></li>
                                             <li><a href="checkout.html">Product Checkout</a></li>
@@ -70,7 +70,7 @@
                                     </div>
                                 </li>
                                 <li> <a href="/login"><span class="flaticon-user"></span></a></li>
-                                <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a> </li>
+                                <li><a href="/mycart"><span class="flaticon-shopping-cart"></span></a> </li>
                             </ul>
                         </div>
                     </div>
@@ -118,7 +118,8 @@
                     for(i=0; i<length; i++){
                         document.write("<div style=\"height:200px; width:auto;\">");
                         document.write("<img src=\"assets/img/gallery/" + rows[i].book_img + "\">");
-                            
+                        document.write("<input type = \"checkbox\" name = \"book_name\" value =\""+rows[i].book_name+ "\" />");
+                        document.write("<button type=\"submit\"value=\"submit\" class=\"btn_3\">보러가기</button></div>");
                     }
                 </script>
             </div>

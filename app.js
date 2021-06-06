@@ -241,8 +241,8 @@ app.get('/purchase', function(req, res){
     var query2 = req.query.book_name;
     conn.query(sql2, query2, function(err,rows,fields){
         var time = new Date();
-        var sql = 'INSERT INTO purchase(user_id, book_name, purchase_date, book_img)VALUES(?,?,?,?)';
-        var query = [req.session.user_id, rows[0].book_name, time, rows[0].book_img];
+        var sql = 'INSERT INTO purchase(user_id, book_name, purchase_date, book_img, book_isbn)VALUES(?,?,?,?,?)';
+        var query = [req.session.user_id, rows[0].book_name, time, rows[0].book_img,rows[0].book_isbn];
         console.log(query);
         conn.query(sql, query, function(err,rows,fields){
             if(err) console.log(err);
@@ -279,6 +279,28 @@ app.get('/cart', function(req, res){
     });
 })
 
+app.get('/tcart', function(req, res){
+    var sql2 = 'SELECT * FROM book WHERE book_name=?'
+    var query2 = req.query.book_name;
+    conn.query(sql2, query2, function(err,rows,fields){
+        var time = new Date();
+        var sql = 'INSERT INTO tcart(book_name, book_price, book_img, user_id)VALUES(?,?,?,?)';
+        var query = [rows[0].book_name, rows[0].book_price, rows[0].book_img, req.session.user_id];
+        console.log(query);
+        conn.query(sql, query, function(err,rows,fields){
+            if(err) console.log(err);
+            else console.log(rows);
+        });
+        res.render("tcart", {
+        'user_id':req.session.user_id
+        , 'book_name':rows[0].book_name
+        , 'book_isbn':rows[0].book_isbn
+        , 'book_auth':rows[0].book_auth
+        , 'book_price':rows[0].book_price
+        , 'time':time});
+    });
+})
+
 app.get('/mycart', function(req, res){
     var sql = 'SELECT * FROM cart WHERE user_id=?';
     var query = req.session.user_id;
@@ -287,7 +309,23 @@ app.get('/mycart', function(req, res){
         res.render('mycart', {'user_id':req.session.user_id, "rows":JSON.stringify(rows)});
     })
 })
+
+
 // 추가할 코드(테스트중)
+
+// [ 실질적으로 블록체인 네트워크에 데이터 가져오는 곳]
+app.get('/mytcart', function(req, res){
+    var sql = 'SELECT * FROM tcart WHERE user_id=?';
+    var query = req.session.user_id;
+    conn.query(sql, query, function(err, rows, fields){
+        console.log(rows);
+        res.render('mycart', {'user_id':req.session.user_id, "rows":JSON.stringify(rows)});
+    })
+})
+
+app.post('/mytcart', function(req, res){
+
+});
 
 app.get('/sendtransfer', function(req, res){
     var sql = "SELECT distinct * FROM purchase WHERE user_id=?";
@@ -299,20 +337,28 @@ app.get('/sendtransfer', function(req, res){
 
 // [ 실질적으로 블록체인 네트워크에 데이터 올리는 곳]
 app.post('/sendtransfer', function(req, res){
-    
+    console.log(req.body.book_name);
+    var book_name = req.body.book_name;
+    var sql = "SELECT * FROM book WHERE book_name = ?"
+    for(var i = 0; i < book_name.length; i++){
+        var query = req.body.book_name[i];
+        conn.query(sql, query, function(err, rows, fields){
+            sendTx(rows[i].book_isbn);
+        });
+    }
+    var sql2 = "DELETE TABLE purchase WHERE book_name = ?  and user_id=?"
+    for(i = 0; i < book_name.length; i++){
+        var query = req.body.book_name[i];
+        conn.query(sql, query, function(err, rows, fields){
+        });
+    }
+    res.render("successtrsansfer");
 });
 
 
-app.get('/recvtransfer', function(req, res){
-
-});
-// [ 실질적으로 블록체인 네트워크에 데이터 가져오는 곳]
-app.post('/recvtransfer', function(req, res){
-
-});
 // Start
 app.listen(3000, ()=>{
-    //console.log('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+
 });
 
 // [ TEST ( instert book )]
