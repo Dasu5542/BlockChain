@@ -287,16 +287,13 @@ app.get('/insertBook', function(req,res){
 async function makeData(MSG){
     console.log(".Do Sign MSG.");
     const bookData = await CustomEnc.ecdsaSign(MSG);
-    //console.log("............",bookData);
     var BookData = JSON.stringify(bookData);
     
     var PlatfromIndex = '02';
     var Purchase = '01';
 
-    //console.log("DataStr  :",dataStr)
     Str_data = BookData+PlatfromIndex+Purchase;
     var ABI_data = web3.eth.abi.encodeParameter('string',Str_data);
-    //console.log(ABI_data)
     return ABI_data;
 }
 
@@ -318,16 +315,9 @@ sendTx("5132");
 
 //Test하는중...
 
-function hexToBytes(hex) {
-    for (var bytes = [], c = 0; c < hex.length; c += 2)
-    bytes.push(parseInt(hex.substr(c, 2), 16));
-    //console.log(bytes)
-    return bytes;
-}
-
 function toHex(arr){
     var hexArr="";
-    //
+
     for(var i=0; i<arr.length; i++){
         var data = arr[i].toString(16)
         if(data.length!=2){
@@ -335,40 +325,14 @@ function toHex(arr){
         }
         hexArr+=(data);
     }
-    //console.log(hexArr)
     return hexArr;
 }
 
-function makeData2(objData){
-    var ivd, ephemPublicKeyd,ciphertextd,macd;
-    //console.log(objData.iv.data)
-    
-    ivd = Buffer.from(toHex(objData.iv.data),'hex');
-    ephemPublicKeyd = Buffer.from(toHex(objData.ephemPublicKey.data),'hex');
-    ciphertextd = Buffer.from(toHex(objData.ciphertext.data),'hex');
-    macd = Buffer.from(toHex(objData.mac.data),'hex');
-
-    return {
-        iv: ivd,
-        ephemPublicKey: ephemPublicKeyd,
-        ciphertext: ciphertextd,
-        mac: macd,
-    };
-}
-async function EccDecrypt(objData){
-    const obj = makeData2(objData)
-    console.log(obj)
-    await CustomEnc.eccDec(obj);
-}
-
-async function getTx(){
-    //console.log("getTx")
+async function getTx(ISBNstr){
     var BLOCK = await web3.eth.getBlock(8,true);
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
-    //console.log(StrData)
     let PurTranData = StrData.substr(StrData.length-2,2)
-    //console.log("pur/trf",PurTranData)
 
     let BookData = StrData.substr(0,StrData.length-4)
     console.log(BookData);
@@ -377,8 +341,8 @@ async function getTx(){
     var data = ObjBookData.data;
     buffData=Buffer.from(toHex(data),'hex')
     console.log(buffData.length)
-    //EccDecrypt(ObjBookData);
-    CustomEnc.ecdsaVerify("5132",buffData)
+
+    CustomEnc.ecdsaVerify(ISBNstr,buffData)
 
 }
 getTx();

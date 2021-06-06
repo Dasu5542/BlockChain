@@ -49,7 +49,6 @@ CustomEnc.ecdsaVerify = async function(strISBN,sig){
   var msg = crypto.createHash("sha256").update(strISBN).digest();
   console.log("..........",sig)
   return await eccrypto.verify(publicKey, msg, sig).then(function(){console.log("OK!")})
-  
 }
 
 /*
