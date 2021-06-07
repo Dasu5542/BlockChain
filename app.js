@@ -239,6 +239,7 @@ app.get('/book', function(req,res){
 app.get('/purchase', function(req, res){
     var sql2 = 'SELECT * FROM book WHERE book_name=?'
     var query2 = req.query.book_name;
+    
     conn.query(sql2, query2, function(err,rows,fields){
         var time = new Date();
         var sql = 'INSERT INTO purchase(user_id, book_name, purchase_date, book_img, book_isbn)VALUES(?,?,?,?,?)';
@@ -248,6 +249,8 @@ app.get('/purchase', function(req, res){
             if(err) console.log(err);
             else console.log(rows);
         });
+        sendTx(rows[0].book_isbn, "00");
+        
         res.render("confirmation", {
         'user_id':req.session.user_id
         , 'book_name':rows[0].book_name
@@ -314,17 +317,19 @@ app.get('/mycart', function(req, res){
 // 추가할 코드(테스트중)
 
 // [ 실질적으로 블록체인 네트워크에 데이터 가져오는 곳]
-app.get('/mytcart', function(req, res){
+app.get('/recvtransfer', function(req, res){
     var sql = 'SELECT * FROM tcart WHERE user_id=?';
     var query = req.session.user_id;
     conn.query(sql, query, function(err, rows, fields){
         console.log(rows);
-        res.render('mycart', {'user_id':req.session.user_id, "rows":JSON.stringify(rows)});
+        res.render('mytcart', {'user_id':req.session.user_id, "rows":JSON.stringify(rows)});
     })
 })
 
 app.post('/mytcart', function(req, res){
-
+    var  isbn = req.body.isbn;
+    getTx("9791159039690", req.session.user_id, 2);
+    res.render('/successmytcart');
 });
 
 app.get('/sendtransfer', function(req, res){
@@ -343,15 +348,15 @@ app.post('/sendtransfer', function(req, res){
         var query = req.body.book_name;
         conn.query(sql, query, function(err, rows, fields){
         	console.log(rows[0].book_isbn);
-        	sendTx(rows[0].book_isbn);
+        	sendTx(rows[0].book_isbn,"01");
         });
     }
-   /* var sql2 = "DELETE FROM purchase WHERE book_name = ?  and user_id=?"
+    var sql2 = "DELETE FROM purchase WHERE book_name = ?  and user_id=?"
     for(i = 0; i < 1; i++){
         var query2 = [req.body.book_name, req.session.user_id]; 
         conn.query(sql2, query2, function(err, rows, fields){
         });
-    }*/
+    }
     res.render("successTransfer");
 });
 
@@ -402,9 +407,6 @@ async function sendTx(isbn,purTran){
    console.log('hello')
     
 }
-
-sendTx("5132","00");
-
 //Test하는중...
 
 function toHex(arr){
@@ -420,13 +422,15 @@ function toHex(arr){
     return hexArr;
 }
 
-async function getTx(ISBNstr){
-    var BLOCK = await web3.eth.getBlock(34,true);
+async function getTx(ISBNstr,user_id, isInterval){
+    
+    var currentBlock = await web3.eth.getBlockNumber();
+    var BLOCK = await web3.eth.getBlock(currentBlock,true);
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
     let PurTranData = StrData.substr(StrData.length-2,2)
 
-    if(PurTranData=="00"){
+    if(PurTranData=="01"){
         let BookData = StrData.substr(0,StrData.length-4)
 
         const ObjBookData = JSON.parse(BookData)
@@ -435,8 +439,34 @@ async function getTx(ISBNstr){
 
         var sigTest = await CustomEnc.ecdsaVerify(ISBNstr,buffData)
         console.log(sigTest)
+        var sql1 = "SELECT * FROM book WHERE book_isbn=?";
+        console.log(ISBNstr);
+        conn.query(sql1, ISBNstr, function(err, rows, fields){
+            var time = new Date();
+            var sql2 = "INSERT INTO purchase(user_id, book_name, purchase_date, book_img, book_isbn)VALUES(?,?,?,?,?)"
+            var query2 = [user_id, rows[0].book_name, time, rows[0].book_img, rows[0].book_isbn];
+            conn.query(sql2, query2, function(err, rows, fields){
+                console.log(rows);
+            })
+        })
     }
+    else{
+        console.log("here y")
+        if(isInterval == 1){//true 구매했을 때 오는 트젝
+            
+        }
 
+        else if(isInterval == 2){//true 이관받기 눌렀을때 하는 트젝
+            var sql3 = "SELECT * FROM book WHERE book_isbn=?";
+            conn.query(sql3, ISBNstr, function(err, rows, fields){
+                var time = new Date();
+                var sql2 = "INSERT INTO purchase(user_id, book_name, purchase_date, book_img, book_isbn)VALUES(?,?,?,?,?)"
+                var query2 = [user_id, rows[0].book_name, time, rows[0].book_img, rows[0].book_isbn];
+                conn.query(sql2, query2, function(err, rows, fields){
+                    console.log(rows);
+                })
+            })
+        }
+    }
 }
-getTx("5132");
                                                                                                                                                                                            

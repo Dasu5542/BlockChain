@@ -52,7 +52,7 @@
                                 <ul id="navigation">  
                                         <ul class="submenu">
                                             <li><a href="/login">Login</a></li>
-                                            <li><a href="/cart">Cart</a></li>
+                                            <li><a href="/mycart">Cart</a></li>
                                             <li><a href="elements.html">Element</a></li>
                                             <li><a href="confirmation.html">Confirmation</a></li>
                                             <li><a href="checkout.html">Product Checkout</a></li>
@@ -70,7 +70,7 @@
                                     </div>
                                 </li>
                                 <li> <a href="/login"><span class="flaticon-user"></span></a></li>
-                                <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a> </li>
+                                <li><a href="/mycart"><span class="flaticon-shopping-cart"></span></a> </li>
                             </ul>
                         </div>
                     </div>
@@ -108,23 +108,22 @@
                 <p><a href="/recvTransfer">이관받기</a></p>
             </div>
         </div>
-        <div class='right-box'>E-book 목록
+        <div class='right-box'>이관하기
+            이관할 수 있는 목록:
             <!--책 목록 나열할 곳-->
             <div>
                 <script>
                     var rows = JSON.parse('<%- rows%>');
                     var length = rows.length;
                     var i;
-                    var sumPrice=0;
+                    document.write("<form class=\"row contact_form\" action=\"/mytcart\" method=\"post\" novalidate=\"novalidate\">");
                     for(i=0; i<length; i++){
                         document.write("<div style=\"height:200px; width:auto;\">");
-                        document.write("<img src=\"assets/img/gallery/" + rows[i].book_img + "\">");
-                        document.write("<tr>"+ rows[i].book_name + "<tr>" + "가격 :" + rows[i].book_price + "원</div>");
-                        sumPrice += rows[i].book_price;
-                        console.log(sumPrice);
-                    }
-                    document.write("<div><br>총 금액 : " + sumPrice + "원</div>");
-                    document.write("<a href=\"/purchase?book_name="+rows[0].book_name+"\"><button style=\"background-color: red; text-align: center\">구매</button></a>");
+                        document.write("제목 : " + rows[i].book_name + "  ISBN : " + rows[i].book_isbn);
+                        document.write("<input type = \"checkbox\" name = \"book_name\" value =\""+rows[i].book_name+ "\" /></div>");
+                    }       
+                    document.write("<button type=\"submit\"value=\"submit\" class=\"btn_3\">이관신청</button></form>");
+
                 </script>
             </div>
         </div>
