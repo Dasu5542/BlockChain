@@ -376,23 +376,22 @@ app.get('/insertBook', function(req,res){
 
 /* Block Chain */
 
-async function makeData(MSG){
+async function makeData(MSG,purTran){
     console.log(".Do Sign MSG:", MSG);
     const bookData = await CustomEnc.ecdsaSign(MSG);
     var BookData = JSON.stringify(bookData);
-    var PlatfromIndex = '02';
-    var Purchase = '01';
+    var PlatfromIndex = '02';   //고정
 
-    Str_data = BookData+PlatfromIndex+Purchase;
+    Str_data = BookData+PlatfromIndex+purTran;
     var ABI_data = web3.eth.abi.encodeParameter('string',Str_data);
     return ABI_data;
 }
 
-async function sendTx(isbn){
+async function sendTx(isbn,purTran){
     var toAddress = '0xa74d2A27407e64405Fb5715d628323EB0eFf0fbC';
     var myAddress = '0x631b9463ce44D84d2C1219981c418225F7Da929C';
 	
-    var dataStr = await makeData(isbn);
+    var dataStr = await makeData(isbn, purTran);
     	//console.log("2",dataStr)
     web3.eth.sendTransaction({
         from: myAddress,
@@ -428,7 +427,7 @@ async function getTx(ISBNstr){
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
     let PurTranData = StrData.substr(StrData.length-2,2)
-    
+
     if(PurTranData=="00"){
         let BookData = StrData.substr(0,StrData.length-4)
 
