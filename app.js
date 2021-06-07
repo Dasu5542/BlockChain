@@ -403,7 +403,7 @@ async function sendTx(isbn,purTran){
     
 }
 
-sendTx("5132");
+sendTx("5132","00");
 
 //Test하는중...
 
@@ -421,9 +421,7 @@ function toHex(arr){
 }
 
 async function getTx(ISBNstr){
-    console.log("v");
-    var BLOCK = await web3.eth.getBlock(8,true);
-        console.log("v",BLOCK);
+    var BLOCK = await web3.eth.getBlock(34,true);
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
     let PurTranData = StrData.substr(StrData.length-2,2)
@@ -434,9 +432,9 @@ async function getTx(ISBNstr){
         const ObjBookData = JSON.parse(BookData)
         var data = ObjBookData.data;
         buffData=Buffer.from(toHex(data),'hex')
-        console.log(buffData.length)
 
-        CustomEnc.ecdsaVerify(ISBNstr,buffData)
+        var sigTest = await CustomEnc.ecdsaVerify(ISBNstr,buffData)
+        console.log(sigTest)
     }
 
 }
