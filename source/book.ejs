@@ -102,16 +102,16 @@
             document.write("<img src=\"assets/img/gallery/" + rows[0].book_img + "\" alt=\"\">");
         }
         function writeBookName(){
-            document.write("<h3> 제목 : " + rows[0].book_name + "</h3>");
+            document.write("<h3><tr>제목 : " + rows[0].book_name + "</h3>");
         }
         function writeBookAuth(){
-            document.write("<h3> 저자 : " + rows[0].book_auth+ "</h3>");
+            document.write("<h3><tr>저자 : " + rows[0].book_auth+ "</h3>");
         }
         function writeBookISBN(){
-            document.write("<h3> ISBN : " + rows[0].book_isbn+ "</h3>");
+            document.write("<h3> <tr>ISBN : " + rows[0].book_isbn+ "</h3>");
         }
         function writeBookPrice(){
-            document.write("<h3> 가격 : " + rows[0].book_price+"원"+"</h3>");
+            document.write("<h3><tr>가격 : " + rows[0].book_price+"원"+"</h3>");
         }
     </script>
     <div>
@@ -121,9 +121,10 @@
         <div class="right-box">
             <script>writeBookName();writeBookAuth();writeBookISBN();writeBookPrice();</script>
             <script>
-                document.write("<a href=\"/purchase?book_name="+rows[0].book_name+"\"><button style=\"background-color: red; text-align: center\">구매</button></a>");
+                document.write("<tr><a href=\"/purchase?book_name="+rows[0].book_name+"\"><button style=\"background-color: red; text-align: center\">구매</button></a> ");
+                document.write("<tr><a href=\"/cart?book_name="+rows[0].book_name+"\"><button style=\"background-color: red; text-align: center\">장바구니</button></a> ");
+                document.write("<tr><a href=\"/tcart?book_name="+rows[0].book_name+"\"><button style=\"background-color: red; text-align: center\">이관 장바구니</button></a> ");
             </script>
-            <a href="/purchase?book_name=9791159039690"><button style="background-color: red; text-align: center">장바구니</button></a>
 
         </div>  
     </div>

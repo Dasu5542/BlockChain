@@ -135,9 +135,9 @@ app.get('/mypage', (req, res)=>{
 
 app.post('/pdfviewer', (req, res)=>{
     var locate = "./source/docs/" + req.body.book_name;
-    console.log(req.body.book_name);
+    console.log(req.body);
     var stream = fs.ReadStream('./source/docs/'+req.body.book_name + ".pdf");//뒤에 책이름 추가.
-    filename=encodeURIComponent("capstone.pdf");
+    filename=encodeURIComponent(req.body.book_name+".pdf");
     res.setHeader('Content-disposition', 'inlinel filename="'+filename+'"');
     res.setHeader('Content-type','application/pdf');
     stream.pipe(res);
@@ -152,7 +152,8 @@ app.get('/revise', function(req, res){
         'user_pw':rows[0].user_pw,
         'user_phone':rows[0].user_phone,
         'user_name':rows[0].user_name,
-        'user_email':rows[0].user_email});
+        'user_email':rows[0].user_email,
+        'user_publickey':rows[0].user_publickey});
     })
 });
 
