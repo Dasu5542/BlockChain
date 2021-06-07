@@ -428,16 +428,17 @@ async function getTx(ISBNstr){
     var TxData = BLOCK.transactions[0].input;
     let StrData = web3.eth.abi.decodeParameter('string',TxData);
     let PurTranData = StrData.substr(StrData.length-2,2)
-
-    let BookData = StrData.substr(0,StrData.length-4)
-
     
-    const ObjBookData = JSON.parse(BookData)
-    var data = ObjBookData.data;
-    buffData=Buffer.from(toHex(data),'hex')
-    console.log(buffData.length)
+    if(PurTranData=="00"){
+        let BookData = StrData.substr(0,StrData.length-4)
 
-    CustomEnc.ecdsaVerify(ISBNstr,buffData)
+        const ObjBookData = JSON.parse(BookData)
+        var data = ObjBookData.data;
+        buffData=Buffer.from(toHex(data),'hex')
+        console.log(buffData.length)
+
+        CustomEnc.ecdsaVerify(ISBNstr,buffData)
+    }
 
 }
 getTx("5132");
