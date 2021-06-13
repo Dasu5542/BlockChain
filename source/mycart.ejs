@@ -52,7 +52,7 @@
                                 <ul id="navigation">  
                                         <ul class="submenu">
                                             <li><a href="/login">Login</a></li>
-                                            <li><a href="/cart">Cart</a></li>
+                                            <li><a href="/mycart">Cart</a></li>
                                             <li><a href="elements.html">Element</a></li>
                                             <li><a href="confirmation.html">Confirmation</a></li>
                                             <li><a href="checkout.html">Product Checkout</a></li>
@@ -70,7 +70,7 @@
                                     </div>
                                 </li>
                                 <li> <a href="/login"><span class="flaticon-user"></span></a></li>
-                                <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a> </li>
+                                <li><a href="/mycart"><span class="flaticon-shopping-cart"></span></a> </li>
                             </ul>
                         </div>
                     </div>
@@ -87,44 +87,65 @@
     <!--수정되야할 페이지 여기서만 수정하면됨-->
     <style>
         .left-box {
-          background: rgb(73, 255, 225);
-          float: left;
-          width: 20%;
+		 
+        float: left;
+        width: 20%;
+		margin: 0;
+		font-family: Nunito,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #858796;
+		text-align: left;
+		background-color: #4e73df;
         }
         .right-box {
+		  color: black;
+		  padding: 5px;
           background: rgb(189, 189, 255);
           float: right;
           width: 80%;
         }
+        #btn {
+            color :#fff;
+            background :#4e73df;
+        }
     </style>
     <div><!-- ``````-->
         <div class='left-box'>
-            <div>안녕하세요 <%= user_id%>님 <br><br></div>
-            <div>
-                <p><a href="/revise">회원정보수정</a></p>  
-                <p><a href="/key">키신청</a></p>
-                <p><a href="/cart">장바구니</a></p>
-                <p><a href="/sendTransfer">이관신청</a></p>
-                <p><a href="/recvTransfer">이관받기</a></p>
-            </div>
-        </div>
-        <div class='right-box'>E-book 목록
+	<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+		<div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+            <div class="sidebar-brand-icon rotate-n-15"></div>
+            <div class="sidebar-brand-text mx-3"><span>안녕하세요 <%= user_id%>님<br /></span></div>
+			</a>
+			<hr class="sidebar-divider my-0" />
+			<ul class="navbar-nav text-light" id="accordionSidebar">
+            <li class="nav-item"><a class="nav-link active" href="/revise"><span>회원정보수정</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/key"><span>키신청</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/cart"><span>장바구니</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/sendTransfer"></i><span>이관신청</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/recvTransfer"><span>이관받기</span></a></li>
+			</ul>
+			<div class="text-center d-none d-md-inline"></div>
+		</div>
+	</nav>
+</div>
+        <div class='right-box'>
+            my cart list:
             <!--책 목록 나열할 곳-->
             <div>
                 <script>
                     var rows = JSON.parse('<%- rows%>');
                     var length = rows.length;
                     var i;
-                    var sumPrice=0;
+                    document.write("<form class=\"row contact_form\" action=\"/purchase\" method=\"post\" novalidate=\"novalidate\">");
                     for(i=0; i<length; i++){
                         document.write("<div style=\"height:200px; width:auto;\">");
-                        document.write("<img src=\"assets/img/gallery/" + rows[i].book_img + "\">");
-                        document.write("<tr>"+ rows[i].book_name + "<tr>" + "가격 :" + rows[i].book_price + "원</div>");
-                        sumPrice += rows[i].book_price;
-                        console.log(sumPrice);
-                    }
-                    document.write("<div><br>총 금액 : " + sumPrice + "원</div>");
-                    document.write("<a href=\"/purchase?book_name="+rows[0].book_name+"\"><button style=\"background-color: red; text-align: center\">구매</button></a>");
+                        document.write("제목 : " + rows[i].book_name + "  ISBN :979115902239690 " );
+                        document.write("<input type = \"checkbox\" name = \"book_name\" value =\""+rows[i].book_name+ "\" /></div>");
+                    }       
+                    document.write("<button id=\"btn\" type=\"submit\"value=\"submit\" class=\"btn_3\">purchase</button></form>");
+
                 </script>
             </div>
         </div>
@@ -135,7 +156,7 @@
         <div class="h-100 d-flex align-items-center justify-content-center">
             <div class="search-close-btn">+</div>
             <form class="search-model-form" action="/Search" method="post">
-                <input type="text" id="search-input" name="bookname" placeholder="찾을 책을 입력하세요.">
+                <input type="text" id="search-input" name="book_name" placeholder="찾을 책을 입력하세요.">
             </form>
         </div>
     </div>

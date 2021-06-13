@@ -97,7 +97,7 @@
 		line-height: 1.5;
 		color: #858796;
 		text-align: left;
-		background-color: #ff99ff;
+		background-color: #4e73df;
         }
         .right-box {
 		  color: black;
@@ -108,7 +108,7 @@
         }
         #btn {
             color :#fff;
-            background :#ff99ff;
+            background :#4e73df;
         }
     </style>
     <div><!-- ``````-->
@@ -130,7 +130,7 @@
                 </div>
             </nav>
         </div>
-        <div class='right-box'>이관하기
+        <div class='right-box'>
             이관할 수 있는 목록:
             <!--책 목록 나열할 곳-->
             <div>
@@ -140,13 +140,14 @@
                     var i;
                     document.write("<form class=\"row contact_form\" action=\"/sendtransfer\" method=\"post\" novalidate=\"novalidate\">");
                     for(i=0; i<length; i++){
-                        document.write("<div style=\"height:200px; width:auto;\">");
-                        document.write("제목 : " + rows[i].book_name + "  ISBN : " + rows[i].book_isbn);
-                        document.write("<input type = \"checkbox\" name = \"book_name\" value =\""+rows[i].book_name+ "\" /></div>");
+                        document.write("    제목 : " + rows[i].book_name + "  ISBN : " + rows[i].book_isbn);
+                        document.write("<input type = \"checkbox\" name = \"book_name\" value =\""+rows[i].book_name+ "\" /><br>");
                     }       
-                    document.write("<button id=\"btn\" type=\"submit\"value=\"submit\" class=\"btn_3\">이관신청</button></form>");
-
+                    //document.write("<button id=\"btn\" type=\"submit\"value=\"submit\" class=\"btn_3\">이관신청</button></form>");
                 </script>
+                <input type="text" id="id" name="id" placeholder="platform_id">
+                <input type="text" id="id" name="platform" placeholder="platform">
+                <button id="btn" type="submit" value="submit">이관신청</button></form>
             </div>
         </div>
     </div>
@@ -156,7 +157,7 @@
         <div class="h-100 d-flex align-items-center justify-content-center">
             <div class="search-close-btn">+</div>
             <form class="search-model-form" action="/Search" method="post">
-                <input type="text" id="search-input" name="bookname" placeholder="찾을 책을 입력하세요.">
+                <input type="text" id="search-input" name="book_name" placeholder="찾을 책을 입력하세요.">
             </form>
         </div>
     </div>

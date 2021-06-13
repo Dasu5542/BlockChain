@@ -40,7 +40,7 @@
                             <ul id="navigation">  
                                     <ul class="submenu">
                                         <li><a href="/login">Login</a></li>
-                                        <li><a href="/cart">Cart</a></li>
+                                        <li><a href="/mycart">Cart</a></li>
                                         <li><a href="/elements.html">Element</a></li>
                                         <li><a href="confirmation.html">Confirmation</a></li>
                                         <li><a href="checkout.html">Product Checkout</a></li>
@@ -57,8 +57,8 @@
                                     <span class="flaticon-search"></span>
                                 </div>
                             </li>
-                            <li> <a href="login.html"><span class="flaticon-user"></span></a></li>
-                            <li><a href="cart.html"><span class="flaticon-shopping-cart"></span></a> </li>
+                            <li> <a href="/login"><span class="flaticon-user"></span></a></li>
+                            <li><a href="/mycart"><span class="flaticon-shopping-cart"></span></a> </li>
                         </ul>
                     </div>
                 </div>
@@ -211,11 +211,11 @@
   <div class="search-model-box">
     <div class="h-100 d-flex align-items-center justify-content-center">
         <div class="search-close-btn">+</div>
-        <form class="search-model-form">
-            <input type="text" id="search-input" placeholder="Searching key.....">
+        <form class="search-model-form" action="/Search" method="post">
+            <input type="text" id="search-input" name="book_name" placeholder="찾을 책을 입력하세요.">
         </form>
     </div>
-  </div>
+</div>
   <!-- Search model end -->
 
   <!-- JS here -->

@@ -126,6 +126,7 @@ app.post('/register', function(req,res){
 app.get('/mypage', (req, res)=>{
     var sql = "SELECT distinct * FROM purchase WHERE user_id=?";
     var params = req.session.user_id;
+    getTx("9791159039690", req.session.user_id, 2);
     conn.query(sql, params, function(err, rows, fields){
         res.render('mypage', {'user_id':req.session.user_id, 'rows':JSON.stringify(rows)});
         
@@ -250,7 +251,6 @@ app.get('/purchase', function(req, res){
             if(err) console.log(err);
             else console.log(rows);
         });
-        sendTx(rows[0].book_isbn, "00");
         
         res.render("confirmation", {
         'user_id':req.session.user_id
@@ -369,14 +369,15 @@ app.listen(3000, ()=>{
 
 // [ TEST ( instert book )]
 app.get('/insertBook', function(req,res){
-    var sql = 'INSERT INTO book(book_name,Author,ISBN,Price, BookImg)VALUES(?,?,?,?,?)';
-    var query = ["어린왕자","앙투안 드 생텍쥐페리","9791159039690",9500, '0x00'];
+    var sql = 'INSERT INTO book(book_name,book_auth,book_isbn,book_price, book_img)VALUES(?,?,?,?,?)';
+    var query = ["ISMS-P 실무가이드","공병철 외 11인","9791196444839",38700, 'ismsp.jpg'];
     conn.query(sql, query, function(err,rows,fields){
         if(err) console.log(err);
         else console.log(rows);
     })
     res.end();
 });
+
 
 
 
